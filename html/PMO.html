@@ -1,0 +1,439 @@
+<link rel="stylesheet" href="/Style%20Library/PMOCustom/css/jquery.treegrid.css" />
+
+<div id="projectSummaryLoader">
+	<h3><i class="fa fa-circle-o-notch fa-spin"></i> Loading project summary...</h3>  
+</div>
+<div id="projectSummaryContent" style="display:none">
+<div ng-app="PMOSummary">
+    <div ng-controller="PMOSummaryController">
+		<h3>PMO Summary</h3>  		
+		<table class="table programTree table-bordered table-striped table-condensed" >
+			<thead>
+				<tr><th>Name  <a onclick="javascript:location.reload();" href="#"><i class="fa fa-refresh"></i></a></th><th>Open Tasks</th><th>Active Issues</th><th>Critical/High Risks</th></tr>
+			</thead>
+			<tbody ng-repeat="item in pmo.program" finished-Render>		
+				<tr class="{{item.treeStructure}}">
+					<td>				
+						<a href="{{item.Url}}"  target="_blank">{{item.Name}} </a><span ng-if="item.Children > 0">({{item.Children}})</span>					
+					</td>
+					<td>
+						<span ng-if="item.IsProgram==false && item.ActiveTasks > 0">
+						<a href="{{item.TaskListUrl}}/upcoming.aspx"  target="_blank">{{item.ActiveTasks}}</a>
+						</span>
+					</td>
+					<td>
+						<span ng-if="item.IsProgram==false && item.ActiveIssues > 0">
+						<a href="{{item.IssuesListUrl}}/active.aspx"  target="_blank">{{item.ActiveIssues}}</a>
+						</span>
+					</td>
+					<td>
+						<span ng-if="item.IsProgram==false && item.ActiveRisks > 0">
+						<a href="{{item.RisksListUrl}}/active.aspx"  target="_blank">{{item.ActiveRisks}}</a>
+						</span>
+					</td>
+				</tr>
+			</tbody>	
+		</table>
+		<!--Status Report-->
+		<div id="statusReportLoader">
+			<h3><i class="fa fa-circle-o-notch fa-spin"></i> Loading status summary...</h3>  
+		</div>
+		<h3>Status Summary</h3>  		
+		<table class="table programTree table-bordered table-striped table-condensed" >
+			<thead>
+				<tr><th>Current Week Status Report </th><th>Project Name  <a onclick="javascript:location.reload();" href="#"><i class="fa fa-refresh"></i></a></th><th>Schedule</th><th>Budget</th><th>% Complete</th><th></th></tr>		
+			</thead>
+			<tbody ng-repeat="item in pmo.status | orderBy:['-Week','Name']" finished-Render>		
+				<tr class="{{item.treeStructure}}">
+					<td>				
+						<a href="{{item.ReportUrl}}"  target="_blank">{{item.Week | date:'fullDate'}} </a>					
+					</td>
+					<td>
+						<a href="{{item.Url}}"  target="_blank">{{item.Name}}</a>
+					</td>
+					<td>
+						{{item.Schedule}}
+					</td>					
+					<td>
+						{{item.Budget}}
+					</td>
+					<td>
+						{{item.PercentComplete}}%
+					</td>
+					<td>
+						<a href="{{item.Url}}/lists/status report"  target="_blank">More status reports</a>
+					</td>
+				</tr>
+			</tbody>	
+		</table>
+	</div>
+</div>
+</div>
+
+
+<script type="text/javascript" src="http://portal.opt-osfns.org/Style%20Library/AngularJS/angular.min.js"></script>
+<script type="text/javascript" src="/Style%20Library/PMOCustom/js/jquery.treegrid.min.js"></script>
+<script type="text/javascript" src="/Style%20Library/PMOCustom/js/jquery.treegrid.bootstrap2.js"></script>
+<script type="text/javascript" src="/Style%20Library/PMOCustom/js/jquery.cookie.js"></script>
+<script type="text/javascript">
+(function(){		
+			
+			var currentSiteAbsoluteURL = "http://pmo.opt-osfns.org/DashBoard/";
+			var projectSummaryLoader = $("#projectSummaryLoader");
+			//Get reference to Status Report spinner
+			var statusReportLoader = $("#statusReportLoader");
+		
+			//Check if relevant HTML is found on the page and set the vaariable to dictate if REST calles are needed
+			var isProjectSummaryUpdate = false;
+			var isStatusUpdate = false;
+			if (projectSummaryLoader.length > 0) {
+				isProjectSummaryUpdate = true;
+				$('#projectSummaryContent').hide();
+			}
+			if (statusReportLoader.length > 0) {
+				isStatusUpdate = true;
+				$('.statusTree').hide();
+			}
+			
+			angular.module("PMOSummary",[])
+			.controller("PMOSummaryController",['$timeout','$scope','$http',function($timeout,$scope,$http){			
+			
+			$scope.pmo = {'program':[],'status':[]};
+			//define Project
+			var Project = function (id, Name, SiteId, Url, ActiveTasks, TotalTasks, TaskListUrl, ActiveIssues, TotalIssues, IssuesListUrl, ActiveRisks, TotalRisks, RisksListUrl, parentId) {
+				this.id = id;
+				this.Name = Name;
+				this.Url = Url;					
+				this.SiteId = SiteId;
+				this.ActiveTasks = ActiveTasks;
+				this.TotalTasks = TotalTasks;
+				this.TaskListUrl = TaskListUrl;
+				this.ActiveIssues = ActiveIssues;
+				this.TotalIssues = TotalIssues;
+				this.RisksListUrl = RisksListUrl;
+				this.ActiveRisks = ActiveRisks;
+				this.TotalRisks = TotalRisks;
+				this.IssuesListUrl = IssuesListUrl
+				this.IsProgram = false;
+				this.Children = 0;
+				
+				if (parentId !== null) {
+					this.treeStructure = "treegrid-" + this.id + " treegrid-parent-" + parentId;
+				} else {
+					this.treeStructure = "treegrid-" + this.id ;
+				}
+			};
+			//Defines the structure for Status Reports
+			var Status = function (id, Name, SiteId, Url, StatusReports, parentId) {
+				this.id = id;
+				this.Name = Name;
+				this.Url = Url;
+				this.SiteId = SiteId;
+				
+
+				if (parentId !== null) {
+					this.treeStructure = "treegrid-" + this.id + " treegrid-parent-" + parentId;
+				} else {
+					this.treeStructure = "treegrid-" + this.id;
+				}
+				
+				if (StatusReports.length > 0) {
+					this.Title = StatusReports[0].Title;
+					this.Week = StatusReports[0].Week;
+					this.Schedule = StatusReports[0].Schedule;
+					this.Budget = StatusReports[0].Budget;
+					this.PercentComplete = StatusReports[0].PercentComplete;
+					this.Id = StatusReports[0].Id;
+					this.ReportUrl = StatusReports[0].Url;		
+				} else {
+					this.Title = "";
+					this.Week = "";
+					this.Schedule = "";
+					this.Budget = "";
+					this.PercentComplete = "";
+					this.Id = "";
+					this.ReportUrl = "";				
+					this.treeStructure = "hideRow";
+				}
+			};
+			function getProjectsData(siteURL, isProjectSummaryUpdate, isStatusUpdate) {
+				//Get all the subsites for the current sharepoint web of current logined user
+				var requestUrl = siteURL + "/_api/web/webs?$select=title,id,url,TemplateId,effectivebasepermissions&$filter=effectivebasepermissions/high ne 0";
+				$.ajax({
+					url : requestUrl,
+					type : "GET",
+					async : false,
+					headers : {
+						"Accept" : "application/json;odata=verbose;charset=utf-8"
+					},
+					success : function (data) {
+						//if found call success method
+						successGetHierarchyFunction(data, isProjectSummaryUpdate, isStatusUpdate);
+					},
+					error : function (xhr) {
+						console.log("Could not load the data. " + xhr.statusText + " " + requestUrl);
+					}
+				});			
+			};
+			function successGetHierarchyFunction(data, isProjectSummaryUpdate, isStatusUpdate) {
+				//Loop thru all webs
+				for (var i = 0; i < data.d.results.length; i++) {
+					//Check if valid entry
+					if (data.d.results[i] != undefined && data.d.results[i].Title != undefined) {						
+							//Check if need to query for Project Information
+							if (isProjectSummaryUpdate) {
+								//Make a call to get items from LIST
+								var ActiveTasks = getListData(data.d.results[i].Url, "Tasks", "?$select=Id,Status&$filter=Status ne 'Completed'");								
+								var TotalTasks = 0;
+								//Make a call to get items from LIST								
+								//cREATE variables to be bound to model
+								var ActiveIssues = getListData(data.d.results[i].Url, "Issues", "?$select=Id,Status&$filter=Status eq 'Active'");
+								var TotalIssues = 0;
+								//Make a call to get items from LIST								
+								var ActiveRisks = getListData(data.d.results[i].Url, "Risks", "?$select=Id,Priority&$filter=Priority eq 'High'");
+								var TotalRisks = 0;								
+								
+								// Call a method to figure of the parent of the current web
+								
+								var parentId = getParentforProjectSummary(data.d.results[i].Url, ActiveTasks, TotalTasks, ActiveIssues, TotalIssues, ActiveRisks, TotalRisks);
+								//Create the object from the variables
+								
+								var project = new Project($scope.pmo.program.length + 1,
+										data.d.results[i].Title,
+										data.d.results[i].Id,
+										data.d.results[i].Url,
+										ActiveTasks,
+										TotalTasks,
+										data.d.results[i].Url + "/Lists/Tasks",
+										ActiveIssues,
+										TotalIssues,
+										data.d.results[i].Url + "/Lists/Issues",
+										ActiveRisks,
+										TotalRisks,
+										data.d.results[i].Url + "/Lists/Risks",
+										parentId);
+								
+								$scope.pmo.program.push(project);
+
+							}
+							//Check if Status report needs to be fetched
+							if (isStatusUpdate) {								
+								var statusSummaryResults = getStatusData(data.d.results[i].Url, "Status Report", "?$select=Id,Title,Health,Budget,Status_x0020_End_x0020_Date,PercentComplete&$top=1&$orderby=Status_x0020_End_x0020_Date desc");								
+								var parentId = null;
+								//Check the parent ID and put it in a variable
+								if ($scope.pmo.status.length > 0) {
+									var parentSiteId = getParent(data.d.results[i].Url);
+									var idx = $.map($scope.pmo.status, function (item, i) {
+											if (item.SiteId === parentSiteId)
+												return i;
+										})[0];
+									if (idx != undefined) {
+										parentId = $scope.pmo.status[idx].id;
+									}
+								}
+								//Create an object if result is found
+								if (data.d.results[i] != undefined) {
+									if (statusSummaryResults.length > 0) {
+									var status = new Status($scope.pmo.status.length + 1,
+											data.d.results[i].Title,
+											data.d.results[i].Id,
+											data.d.results[i].Url,
+											statusSummaryResults,
+											parentId);
+									//Push it into Model
+									$scope.pmo.status.push(status);
+									}
+
+								}
+							}
+							//Recuursivelly calls for each web
+							getProjectsData(data.d.results[i].Url, isProjectSummaryUpdate, isStatusUpdate);
+						
+					}
+				}				
+			};
+			//Method to get Status Report Information
+			function getStatusData(siteURL, listName, selectAndFilter) {
+				var summary = [];
+				var requestUrl = siteURL + "/_api/lists/getByTitle('" + listName + "')/items" + selectAndFilter;
+				$.ajax({
+					url : requestUrl,
+					type : "GET",
+					async : false,
+					headers : {
+						"Accept" : "application/json;odata=verbose;charset=utf-8"
+					},
+					success : function (data) {
+
+						//for (var i = 0; i < data.d.results.length; i++) {
+							if (data.d.results[0] != undefined) {
+								summary.push({
+									Id : data.d.results[0].Id,
+									Schedule : data.d.results[0].Health,
+									Budget : data.d.results[0].Budget,
+									PercentComplete : (data.d.results[0].PercentComplete * 100),
+									Url : siteURL + "/Lists/" + listName + "/DispForm.aspx?ID=" + data.d.results[0].Id,
+									Title : data.d.results[0].Title,									
+									Week : data.d.results[0].Status_x0020_End_x0020_Date
+									//Status End Date
+								})
+							}
+						//}
+						
+							
+					},
+					error : function (xhr) {
+						console.log("Could not load the data. " + xhr.statusText + " " + requestUrl);
+					}
+				}); ;
+				return summary;
+			}
+			//Reusuable REST call for LISTS based on select filter
+			
+			function getListData(siteURL, listName, select) {
+				var requestUrl = siteURL + "/_api/lists/getByTitle('" + listName + "')/items" + select;
+				var count = 0;
+				$.ajax({
+					url : requestUrl,
+					type : "GET",
+					dataType: "json",
+					async : false,					
+					headers : {
+						"Accept" : "application/json;odata=verbose;charset=utf-8"
+					},
+					success : function (data) {
+							if (data.d.results.length > 0)
+								count = data.d.results.length;
+							console.log(count);
+					},
+					error : function () {
+							console.log("Could not load the data. 1 "  + requestUrl);
+					}
+				});
+				return count;
+			}
+			function getParentforProjectSummary(siteURL, ActiveTasks, TotalTasks, ActiveIssues, TotalIssues, ActiveRisks, TotalRisks) {
+				var parentId = null;
+				//Check if any item exists in modal
+				if ($scope.pmo.program.length > 0) {
+					// get parent ID(GUID) based on SITE URL
+					var parentSiteId = getParent(siteURL);
+					//Map the GUID from REST call to the GUID in existing model
+					var idx = $.map($scope.pmo.program, function (item, i) {
+							if (item.SiteId === parentSiteId)
+								return i;
+						})[0];
+					if (idx != undefined) {
+						//Get the ID based on GUID match
+						parentId = $scope.pmo.program[idx].id;
+						
+						$scope.pmo.program[idx].ActiveTasks = ActiveTasks;
+						$scope.pmo.program[idx].TotalTasks = TotalTasks;
+						$scope.pmo.program[idx].TaskListUrl = $scope.pmo.program[idx].Url;
+						$scope.pmo.program[idx].ActiveIssues = ActiveIssues;
+						$scope.pmo.program[idx].TotalIssues = TotalIssues;
+						$scope.pmo.program[idx].IssuesListUrl = $scope.pmo.program[idx].Url;
+						$scope.pmo.program[idx].ActiveRisks = ActiveRisks;
+						$scope.pmo.program[idx].TotalRisks = TotalRisks;
+						$scope.pmo.program[idx].RisksListUrl = $scope.pmo.program[idx].Url;
+						$scope.pmo.program[idx].IsProgram = true;
+						$scope.pmo.program[idx].Children = $scope.pmo.program[idx].Children + 1;
+						// Calls to support teo levels of programs
+						getParentforProjectSummary($scope.pmo.program[idx].Url,
+							$scope.pmo.program[idx].ActiveTasks,
+							$scope.pmo.program[idx].TotalTasks,
+							$scope.pmo.program[idx].ActiveIssues,
+							$scope.pmo.program[idx].TotalIssues,
+							$scope.pmo.program[idx].ActiveRisks,
+							$scope.pmo.program[idx].TotalRisks);
+					}
+				}
+				return parentId;
+			};
+			// get parent ID(GUID) based on SITE URL
+			function getParent(siteURL) {
+				var requestUrl = siteURL + "/_api/Web/ParentWeb?$select=Id";
+				var parentId = null;
+				$.ajax({
+					url : requestUrl,
+					type : "GET",
+					async : false,
+					headers : {
+						"Accept" : "application/json;odata=verbose;charset=utf-8"
+					},
+					success : function (data) {
+						if (data.d.Id != undefined) {
+							parentId = data.d.Id;
+						}
+					},
+					error : function (xhr) {
+						console.log("Could not load the data. " + xhr.statusText + " " + requestUrl);
+					}
+				});
+				return parentId;
+			};
+			
+			
+			
+			if (isStatusUpdate || isProjectSummaryUpdate) {
+				
+				getProjectsData(currentSiteAbsoluteURL, isProjectSummaryUpdate, isStatusUpdate);				
+			}
+			/*if ($scope.pmo.program.length > 0) {	
+				//Hide the spinner and show the other DIV
+				projectSummaryLoader.hide();
+				$('#projectSummaryContent').show();
+				
+			} else {
+				projectSummaryLoader.text('Project information not found.');
+			}
+			if ($scope.pmo.status.length > 0) {
+				statusReportLoader.hide();				
+			} else {
+				statusReportLoader.text('Status information not found.');
+			}*/
+			}])
+						
+			
+			.directive('finishedRender', ['$timeout', function ($timeout) {  
+				return {
+					link: function (scope, elem, attrs, ctrl) {  
+						var cmptl = function(){	
+							
+							$('.programTree').treegrid({
+							expanderExpandedClass : 'fa fa-minus-circle',
+							expanderCollapsedClass : 'fa fa-plus-circle',
+							initialState : 'collapsed',
+							saveState: true						
+							});
+							$(".treegrid-expanded").css("font-weight", "Bold");
+							$(".treegrid-collapsed").css("font-weight", "Bold");
+							projectSummaryLoader.hide();
+							$('#projectSummaryContent').show();
+							statusReportLoader.hide();
+							
+						}
+						$timeout(cmptl,0);
+						scope.$on("$destroy",function() {
+                            $timeout.cancel(cmptl);
+							}
+						);
+					}
+				}
+			}]);
+			
+		
+	
+})();
+
+
+    </script>
+	<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">6QFQE3HAR6TF-2-601</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">4fcdc14a-d27a-4bfb-acb8-d1c4775e8d3b</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">http://pmo.opt-osfns.org/_layouts/15/DocIdRedir.aspx?ID=6QFQE3HAR6TF-2-601, 6QFQE3HAR6TF-2-601</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>

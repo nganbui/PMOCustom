@@ -1,0 +1,48 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+li { cursor: pointer; cursor: hand; }
+.ms-quicklaunchouter{ display: none; } 
+ .ms-core-listMenu-separatorLine { display: none; } 
+.hideRow{display:none;}
+.reportbuilder{width:50%;}
+.report th{width:50%;}
+.report span.ng-scope,.ng-binding,ul li a.ng-binding,.ng-valid{
+	font-weight:normal;
+}
+.projSummary a:visited{
+	color:white;
+}
+.projSummaryNotice {
+	color:red;
+	font-weight:bold;
+	font-size:20px;
+}
+.moreInfo{
+	padding-left:10px;
+}
+#projectInfoLink span{
+	margin-left:80px;
+}
+.error{color:red;}
+@media screen {
+    #printSection {
+        display: none;
+    }
+}
+
+@media print {
+    body * {
+        visibility:hidden;
+    }
+    #printSection, #printSection * {
+        visibility:visible;
+    }
+    #printSection {
+        position:absolute;
+        left:0;
+        top:0;
+    }
+}
+
+

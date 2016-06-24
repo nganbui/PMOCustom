@@ -1,0 +1,70 @@
+
+        <link rel="stylesheet" href="http://pmo.opt-osfns.org/Style%20Library/PMOCustom/css/jquery.treegrid.css">
+		<link rel="stylesheet" href="http://pmo.opt-osfns.org/Style%20Library/PMOCustom/css/pmo.css">
+		<script type="text/javascript" src="/_layouts/15/MicrosoftAjax.js"></script>
+		<script type="text/javascript" src="/_layouts/15/sp.runtime.js"></script>
+		<script type="text/javascript" src="/_layouts/15/sp.js" ></script>
+        <script type="text/javascript" src="http://pmo.opt-osfns.org/Style%20Library/PMOCustom/js/jquery.treegrid.min.js"></script>
+        <script type="text/javascript" src="http://pmo.opt-osfns.org/Style%20Library/PMOCustom/js/jquery.treegrid.bootstrap2.js"></script>
+		<script type="text/javascript" src="http://pmo.opt-osfns.org/Style%20Library/PMOCustom/js/knockout-3.3.0.js"></script>
+		<script type="text/javascript" src="/Style%20Library/PMOCustom/js/date.js"></script>		
+		<script type="text/javascript" src="/Style%20Library/PMOCustom/js/DashboardRollUp.js"></script>
+<div id="projectSummaryLoader">
+<h3><i class="fa fa-circle-o-notch fa-spin"></i> Loading project summary...</h3>  
+</div></div>
+<div id="projectSummaryContent" style="display:none">
+<table class="table programTree table-bordered table-striped table-condensed" >
+    <thead>
+        <tr><th>Name  <a onclick="javascript:location.reload();" href="#"><i class="fa fa-refresh"></i></a></th><th>Open Tasks</th><th>Active Issues</th><th>Critical/High Risks</th></tr>
+    </thead>
+    <tbody data-bind="foreach: program">
+        <tr data-bind="css: treeStructure">
+            <td ><a data-bind="attr: { href: Url }" target="_blank">
+    <span data-bind="text: Name"></span>
+</a> <span data-bind="css: {'sr-only': Children() == 0}">(<span data-bind="text: Children"></span>)</span></td>
+            <td >
+			<!--<div class="progress" style="margin-bottom:5px" data-bind="attr: { 'title': ActiveTasks() +' tasks completed out of total tasks ' + TotalTasks()}">
+			<a style="color:black" data-bind="attr: { href: TaskListUrl }" target="_blank">
+  <div role="progressbar" data-bind="attr: { 'aria-valuenow': TaskPercentage() }, style: { 'width': TaskPercentage() +'%'}, css: {'progress-bar progress-bar-danger': TaskPercentage() < 35 ,'progress-bar progress-bar-warning': TaskPercentage() > 34&&TaskPercentage() < 76,'progress-bar progress-bar-success': TaskPercentage() > 75, 'progress-bar': true}" aria-valuemin="20" aria-valuemax="100" > 
+	
+  </div>
+  </a>
+</div>-->
+<div data-bind="if: ActiveTasks()>0">
+<a data-bind="attr: { href: TaskListUrl() + '/upcoming.aspx'  }" target="_blank"><span data-bind="text:IsProgram()==false ? ActiveTasks() : ''">  	 
+</span></a>
+</div>
+</td>
+			<td >
+			<!--<div class="progress" style="margin-bottom:5px" data-bind="attr: { 'title': ActiveIssues() +' issues closed out of total issues ' + TotalIssues()}">
+			<a style="color:black" data-bind="attr: { href: IssuesListUrl }" target="_blank">
+  <div role="progressbar" data-bind="attr: { 'aria-valuenow': IssuesPercentage() }, style: { 'width': IssuesPercentage() +'%'}, css: {'progress-bar progress-bar-danger': IssuesPercentage() < 35 ,'progress-bar progress-bar-warning': IssuesPercentage() > 34&&IssuesPercentage() < 76,'progress-bar progress-bar-success': IssuesPercentage() > 75, 'progress-bar': true}" aria-valuemin="20" aria-valuemax="100" > 
+ </div>
+  </a>
+</div>-->
+<div data-bind="if: ActiveIssues()>0">
+<a data-bind="attr: { href: IssuesListUrl() + '/active.aspx'  }" target="_blank"><span data-bind="text:IsProgram()==false ? ActiveIssues() : ''">  	 
+</span></a>
+</div>
+</td>
+			<td >
+			<!--<div class="progress" style="margin-bottom:5px" data-bind="attr: { 'title': ActiveRisks() +' risks closed out of total risks ' + TotalRisks()}">
+			<a style="color:black" data-bind="attr: { href: RisksListUrl }" target="_blank">
+  <div role="progressbar" data-bind="attr: { 'aria-valuenow': RisksPercentage() }, style: { 'width': RisksPercentage() +'%'}, css: {'progress-bar progress-bar-danger': RisksPercentage() < 35 ,'progress-bar progress-bar-warning': RisksPercentage() > 34&&RisksPercentage() < 76,'progress-bar progress-bar-success': RisksPercentage() > 75, 'progress-bar': true}" aria-valuemin="20" aria-valuemax="100" > 
+ </div>
+  </a>
+</div>-->
+
+
+<div data-bind="if: ActiveRisks()>0">
+<a data-bind="attr: { href: RisksListUrl() + '/active.aspx'  }" target="_blank"><span data-bind="text:IsProgram()==false ? ActiveRisks() : ''">  	 
+</span></a>
+</div>
+
+</td>
+        </tr>
+    </tbody>	
+</table>
+
+</div>
+<head><title></title></head>

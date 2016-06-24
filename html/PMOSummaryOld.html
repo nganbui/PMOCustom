@@ -1,0 +1,97 @@
+<link rel="stylesheet" href="/Style%20Library/PMOCustom/css/jquery.treegrid.css">
+<link rel="stylesheet" href="/Style%20Library/PMOCustom/css/pmo.css">
+<script src="http://portal.opt-osfns.org/Style%20Library/AngularJS/angular.min.js"></script>
+<script src="http://portal.opt-osfns.org/Style%20Library/AngularJS/app.js"></script>       
+<script type="text/javascript" src="/Style%20Library/PMOCustom/js/jquery.treegrid.min.js"></script>
+<script type="text/javascript" src="/Style%20Library/PMOCustom/js/jquery.treegrid.bootstrap2.js"></script>
+<script src="/Style%20Library/PMOCustom/js/DashboardSummaryOld.js"></script>
+<script type="text/javascript" src="/Style%20Library/PMOCustom/js/dirPagination.js"></script>
+
+<div id="projectSummaryLoader">
+<h3><i class="fa fa-circle-o-notch fa-spin"></i> Loading project summary...</h3>  
+</div>
+
+<div ng-app="PMODashboard" id="projectSummaryContent"  style="display:none" ng-cloak>
+<div ng-controller="PMOSummaryController">
+ <h3>PMO Summary</h3>
+<div ng-show="projects.length==0">Project information not found.</div>
+<div ng-show="projects.length>0">	
+	<!--<select name="selectStatus"
+			ng-options="item.name for item in projectStatus.options track by item.id"
+			ng-model="projectStatus.selectedOption">
+			<option value="">Filter by Project Status</option>																
+	</select> 
+	<p>Currently selected: {{projectStatus.selectedOption.name}} </p>-->
+	<table class="table treeProgram table-bordered table-striped table-condensed">		
+	<a href="#" style="color:#FFFFFF" class="expandcollapse projSummary btn btn-mini btn-primary pull-right" state="0"><i class='fa fa-plus-circle'></i> Expand All</a>
+	<thead>
+		<tr class="treegrid-0"><th>Name <a onclick="javascript:location.reload();" href="#"><i class="fa fa-refresh"></i></a></th><th>Open Tasks</th><th>Active Issues</th><th>Critical/High Risks</th></tr>
+	</thead>	
+	<tbody ng-repeat="item in projects | filterStatus:projectStatus.selectedOption">	
+		<tr id="{{item.Id}}" class="{{item.treeStructure}}"  title="{{item.Status}}" project="{{item.IsProject}}">
+			<td siteURL="{{item.Url}}"><a ng-href="{{item.Url}}"  target="_blank">{{item.Title}}</a><span class="itemCount" /></td>
+			<td class="tasks"></td>
+			<td class="issues"></td>
+			<td class="risks"></td>
+		</tr>    
+	</tbody>
+</table>
+</div>
+</div>
+<div ng-controller="PMOStatusController">
+ <h3>Status Summary</h3> 
+<div ng-show="statusReports.length==0">Status information not found.</div>
+<div ng-show="statusReports.length>0">
+ <table class="table table-bordered table-striped table-condensed">
+	<thead>
+		<tr><th>Current Week Status Report </th><th>Project Name  <a onclick="javascript:location.reload();" href="#"><i class="fa fa-refresh"></i></a></th><th>Current Project Phase</th><th>Schedule</th><th>Budget</th><th>% Complete</th><th></th></tr>		
+	</thead>
+	
+	<!--<tbody ng-repeat="item in statusReports | orderBy:['-StatusReport.Week','Sitename']">			-->
+		<tbody dir-paginate="item in statusReports  | orderBy:['-Week','ProjectName'] | itemsPerPage:10">		
+			<tr ng-show="item.Id>0">
+				<td>				
+					<a ng-href="{{item.ReportUrl}}"  target="_blank">{{item.Week | date:'fullDate'}} </a>					
+				</td>
+				<td>
+					<a ng-href="{{item.ProjectURL}}"  target="_blank">{{item.ProjectName}}</a>
+				</td>
+				<td>
+					{{item.CurrentPhase}}
+				</td>
+				<td>
+					{{item.Health}}
+				</td>					
+				<td>
+					{{item.Budget}}
+				</td>
+				<td>
+					{{item.PercentComplete}}%
+				</td>
+				<td>
+					<a ng-href="{{item.ProjectURL}}/lists/status report"  target="_blank">More status reports</a>
+				</td>
+			</tr>
+	</tbody>	
+	<tr>
+		
+			<dir-pagination-controls max-size="2" direction-links="true" boundary-links="true">
+             </dir-pagination-controls>
+			
+			</tr>
+</table>
+<dir-pagination-controls max-size="2" direction-links="true" boundary-links="true">
+             </dir-pagination-controls>
+</div>
+
+</div>
+</div>
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">6QFQE3HAR6TF-2-622</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">6eb892aa-ffdc-4309-b8ca-0a8d1c9edf2b</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">http://pmo.opt-osfns.org/_layouts/15/DocIdRedir.aspx?ID=6QFQE3HAR6TF-2-622, 6QFQE3HAR6TF-2-622</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>

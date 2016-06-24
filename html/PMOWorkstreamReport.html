@@ -1,0 +1,125 @@
+<link rel="stylesheet" href="/Style%20Library/PMOCustom/css/pmo.css">
+    
+ <div ng-app="PMOWorkstreamReport">
+    <div ng-controller="ProjectController" class="span10">			
+		<table class="table reportbuilder table-bordered table-striped table-condensed">
+			<tbody>
+				<tr>
+					<th>Workstream</th>
+					<th>
+						<select ng-model="selectedWorkstream" ng-options="item.Title for item in WorkstreamCol" ng-change='showReport()'>
+								<option value="">Select Workstream</option>
+						</select>
+					</th>                
+				</tr>
+				<tr>
+					<th>Start Date</th>
+					<th>
+						<input type="text" ng-model="startDate" datepicker ng-change='checkErr(startDate,endDate)'  />						
+					</th>                
+				</tr>
+				<tr>
+					<th>End Date</th>
+					<th>
+							<input type="text" ng-model="endDate" datepicker ng-change='checkErr(startDate,endDate)' />	
+							<div class="error" ng-cloak>{{errMessage}}</div>
+					</th>                
+				</tr>								
+				<tr>
+					<th></th>
+					<th>
+						<input type="button" value="Run Report" ng-click="RunReport()" ng-disabled="isDisabled" />
+					</th>						
+				</tr>				
+			</tbody>
+		</table>		
+		<div ng-show="runReport"  ng-cloak>
+			<div id="WorkstreamReport">
+				<h4 ng-show="runReport">Status Report for Workstream : {{selectedWorkstream.Title}} <span ng-class="{'hideRow': startDate==null || endDate==null}">from {{startDate}} to {{endDate}}</span></h4>				
+				<table class="table report table-bordered table-striped table-condensed">
+					<tbody>
+						<tr>
+							<th><i class="fa fa-tasks"></i> Tasks completed last 7 Days</th>
+							<th><i class="fa fa-tasks"></i> Tasks to be completed over Next 7 Days</th>
+						</tr>
+						<tr>
+							<th>
+								<span ng-if="CompletedTasksLast7days.length==0">N/A</span>
+								<ul ng-repeat="task in CompletedTasksLast7days">
+									<li><a ng-href="{{currentURL}}/Lists/Tasks/DispForm.aspx?ID={{task.ID}}" target="_blank">{{task.Title}}</a></li>
+								</ul>
+							</th>
+							<th>
+								<span ng-if="CompletedTasksOver7days.length==0">N/A</span>
+								<ul ng-repeat="task in CompletedTasksOver7days">
+									<li><a ng-href="{{currentURL}}/Lists/Tasks/DispForm.aspx?ID={{task.ID}}" target="_blank">{{task.Title}}</a></li>
+								</ul>
+							</th>
+						</tr>
+						
+						<tr>
+							<th><i class="fa fa-tasks"></i> Overdue Tasks</th>
+							<th></th>
+						</tr>
+						<tr>
+							<th>								
+								<span ng-if="OverdueTasks.length==0">N/A</span>
+								<ul ng-repeat="task in OverdueTasks">
+									<li><a ng-href="{{currentURL}}/Lists/Tasks/DispForm.aspx?ID={{task.ID}}" target="_blank">{{task.Title}}</a> - Days past Due date: {{task.DaysPast}} days</li>								
+								</ul>
+							</th>
+							<th>
+								<table class="table table-bordered table-striped table-condensed">
+									<tbody>
+										<tr>
+											<th><i class="fa fa-list-ul"></i> Active Issues</th>
+										</tr>
+										<tr>
+											<th>
+												<span ng-if="Issues.length==0">N/A</span>
+												<ul ng-repeat="issue in Issues">
+													<li><a ng-href="{{currentURL}}/Lists/Issues/DispForm.aspx?ID={{issue.ID}}" target="_blank">{{issue.Title}}</a></li>
+												</ul>
+											</th>
+										</tr>
+										<tr>
+											<th><i class="fa fa-list-ul"></i> All Risks</th>
+										</tr>
+										<tr>
+											<th>
+												<span ng-if="Risks.length==0">N/A</span>
+												<ul ng-repeat="risk in Risks">
+													<li><a ng-href="{{currentURL}}/Lists/Risks/DispForm.aspx?ID={{risk.ID}}" target="_blank">{{risk.Title}}</a></li>
+												</ul>
+											</th>
+										</tr>
+									</tbody>
+								</table>									
+							</th>
+						</tr>
+					</tbody>		
+				</table>			
+			</div>
+		
+			<!--<button class="btn btn-primary" ng-click="PrintReport('WorkstreamReport');"><i class="fa fa-print"></i> Print</button>-->
+			<button class="btn btn-primary" onclick="openWindow('WorkstreamReport','Workstream Report');return false;"><i class="fa fa-print"></i> Print Report</button>			
+			<!--<button class="btn btn-primary" ng-print print-element-id="WorkstreamReport"><i class="fa fa-print"></i> Print</button>-->
+		</div>
+    </div>
+</div>
+
+<script src="http://portal.opt-osfns.org/Style%20Library/AngularJS/angular.min.js"></script>
+<script src="http://portal.opt-osfns.org/Style%20Library/AngularJS/angular-route.min.js"></script>
+<script src="http://portal.opt-osfns.org/Style%20Library/Bootstrap/js/ui-bootstrap-tpls-1.1.0.min.js"></script> 
+<script src="http://portal.opt-osfns.org/Style%20Library/AngularJS/app.js"></script>       
+<script src="/Style%20Library/PMOCustom/js/date.js"></script>
+<script src="/Style%20Library/PMOCustom/js/services/report.js"></script>
+<script src="/Style%20Library/PMOCustom/js/controllers/workstream.js"></script><html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">6QFQE3HAR6TF-2-594</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">7c1b38f4-d859-4c2f-a9b0-ca54d203a7f9</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">http://pmo.opt-osfns.org/_layouts/15/DocIdRedir.aspx?ID=6QFQE3HAR6TF-2-594, 6QFQE3HAR6TF-2-594</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>

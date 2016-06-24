@@ -1,0 +1,61 @@
+<div id="statusReportLoader">
+<h3><i class="fa fa-circle-o-notch fa-spin"></i> Loading status summary...</h3>  
+</div></div>
+<table class="table statusTree table-bordered table-striped table-condensed" style="display:none">
+    <thead>
+        <tr><th>Current Week Status Report</th><th>Project Name  <a onclick="javascript:location.reload();" href="#"><i class="fa fa-refresh"></i></a></th><th>Schedule</th><th>Budget</th><th>% Complete</th><th></th></tr>
+    </thead>
+    <tbody data-bind="foreach: status">
+        <tr data-bind="css: treeStructure">
+            
+
+<td><a data-bind="attr: { href: ReportUrl }" target="_blank">
+    <span data-bind="dateString: Week, datePattern: 'dddd, MMMM dd, yyyy'"></span>
+</a> </td>
+<td><a data-bind="attr: { href: Url }" target="_blank">
+    
+	<span data-bind="text: Name"></span>
+	
+</a> </td>
+<td>
+    <!--<span  data-bind="text: Schedule, css: {'label-success': Schedule == '(1) On Schedule','label-warning': Schedule == '(2) At Risk','label-danger': Schedule == '(3) Critical','label':true}"></span>-->
+	<span  data-bind="text: Schedule"></span>
+</td>
+<td>
+    
+	<span  data-bind="text: Budget"></span>
+</td>
+<td >
+<!--<div class="progress" style="margin-bottom:5px" data-bind="attr: { 'title': PercentComplete + '%' }, css: {'sr-only': PercentComplete == ''}">
+  <div role="progressbar" data-bind="attr: { 'aria-valuenow': PercentComplete }, style: { 'width': PercentComplete +'%'}, css: {'progress-bar progress-bar-info': true}" aria-valuemin="20" aria-valuemax="100" > 
+	<span data-bind="text: PercentComplete"></span>%
+  </div>
+</div>-->
+ <div class="progress" style="margin-bottom:5px" data-bind="attr: { 'title': PercentComplete + '%' }, css: {'sr-only': PercentComplete == ''}">  
+	<span data-bind="text: PercentComplete"></span>%  
+</div> 
+</td>
+<td>
+<p class="text-right" data-bind="css: {'sr-only': Week == ''}">
+<a data-bind="attr: { href: Url +'/lists/status report'}" target="_blank">More status reports</a>
+</p>
+</td>
+
+        </tr>
+		
+    </tbody>
+</table>
+
+
+
+
+
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">6QFQE3HAR6TF-2-510</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">013588a1-d731-47e6-88f9-0fd88831bdd7</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">http://pmo.opt-osfns.org/_layouts/15/DocIdRedir.aspx?ID=6QFQE3HAR6TF-2-510, 6QFQE3HAR6TF-2-510</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+<title></title></head>

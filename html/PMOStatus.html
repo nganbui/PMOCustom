@@ -1,0 +1,60 @@
+<!-- Bootstrap core CSS -->
+<link rel="stylesheet" href="http://portal.opt-osfns.org/Style%20Library/Bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="/Style%20Library/VividCustom/VividCustom.css"/>
+<link rel="stylesheet" type="text/css" href="/Style%20Library/VividCustom/css/font-awesome.min.css"/>
+<link rel="stylesheet" type="text/css" href="/Style%20Library/VividCustom/COREV15.css"/>
+<link rel="stylesheet" href="/Style%20Library/PMOCustom/css/jquery.treegrid.css">
+<link rel="stylesheet" href="/Style%20Library/PMOCustom/css/pmo.css">
+<script type="text/javascript" src="http://portal.opt-osfns.org/Style%20Library/VividCustom/js/jquery.min.js"></script>
+<script src="http://portal.opt-osfns.org/Style%20Library/AngularJS/angular.min.js"></script>
+<script src="http://portal.opt-osfns.org/Style%20Library/AngularJS/app.js"></script>       
+<script src="/Style%20Library/PMOCustom/js/DashboardStatus.js"></script>
+<div ng-app="PMOStatus" ng-cloak>
+ <div ng-controller="PMOStatusController">
+ <h3>Status Summary</h3>  		
+<table class="table table-bordered table-striped table-condensed" >
+	<thead>
+		<tr><th>Current Week Status Report </th><th>Project Name  <a onclick="javascript:location.reload();" href="#"><i class="fa fa-refresh"></i></a></th><th>Schedule</th><th>Budget</th><th>% Complete</th><th></th></tr>		
+	</thead>
+	<tbody ng-repeat="item in statusReports | orderBy:['-Week','Name']">			
+			
+			<tr ng-show="item.StatusReport.Id>0">
+				<td>				
+					<a ng-href="{{item.StatusReport.ReportUrl}}"  target="_blank">{{item.StatusReport.Week | date:'fullDate'}} </a>					
+				</td>
+				<td>
+					<a ng-href="{{item.SiteURl}}"  target="_blank">{{item.Sitename}}</a>
+				</td>
+				<td>
+					{{item.StatusReport.Health}}
+				</td>					
+				<td>
+					{{item.StatusReport.Budget}}
+				</td>
+				<td>
+					{{item.StatusReport.PercentComplete}}%
+				</td>
+				<td>
+					<a ng-href="{{item.SiteURl}}/lists/status report"  target="_blank">More status reports</a>
+				</td>
+			</tr>		
+			
+	</tbody>	
+</table>
+ </div>
+ </div>
+
+
+
+
+
+
+ <html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">6QFQE3HAR6TF-2-605</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">9f091330-97a9-4e36-a4bb-af9030d0b5d3</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">http://pmo.opt-osfns.org/_layouts/15/DocIdRedir.aspx?ID=6QFQE3HAR6TF-2-605, 6QFQE3HAR6TF-2-605</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
